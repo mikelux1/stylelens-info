@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StyleLens - AI Photo Sorting That Learns Your Taste</title>
+    <meta name="description" content="StyleLens is an AI-powered photo sorting app that learns YOUR unique photography taste. Sort thousands of photos in minutes. All AI runs locally on your iPhone.">
+    <meta name="keywords" content="photo organizer, AI photo sorting, photo culling, iPhone photo manager, photography app, StyleDNA, machine learning photos">
+    <meta name="author" content="StyleLens">
+    <meta name="robots" content="index, follow">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="StyleLens - AI Photo Sorting That Learns Your Taste">
+    <meta property="og:description" content="Stop scrolling through thousands of photos. StyleLens learns what YOU consider beautiful, not just what's technically good.">
+    <meta property="og:url" content="https://mikelux1.github.io/stylelens-info">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="StyleLens - AI Photo Sorting That Learns Your Taste">
+    <meta name="twitter:description" content="AI-powered photo sorting that learns YOUR unique taste. 100% on-device. No cloud.">
+    <link rel="canonical" href="https://mikelux1.github.io/stylelens-info">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "MobileApplication",
+        "name": "StyleLens",
+        "operatingSystem": "iOS",
+        "applicationCategory": "PhotographyApplication",
+        "description": "AI-powered photo sorting app that learns your unique photography taste",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
+    </script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --blue: #0A84FF;
+            --purple: #8B5CF6;
+            --green: #30D158;
+            --bg: #000000;
+            --bg-raised: #1C1C1E;
+            --bg-card: #2C2C2E;
+            --text: #F5F5F7;
+            --text-dim: #98989F;
+            --border: #38383A;
+            --max-w: 1080px;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .wrap { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+
+        /* ---- NAV ---- */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(0,0,0,0.72);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        .nav-inner {
+            max-width: var(--max-w); margin: 0 auto; padding: 0 24px;
+            display: flex; justify-content: space-between; align-items: center;
+            height: 56px;
+        }
+        .nav-brand {
+            font-size: 1.25rem; font-weight: 700;
+            color: var(--text); text-decoration: none;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .nav-brand span {
+            background: linear-gradient(135deg, var(--blue), var(--purple));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .nav-cta {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 18px; border-radius: 20px;
+            background: var(--blue); color: #fff;
+            text-decoration: none; font-weight: 600; font-size: 0.875rem;
+            transition: opacity 0.2s;
+        }
+        .nav-cta:hover { opacity: 0.85; }
+
+        /* ---- HERO ---- */
+        .hero {
+            padding: 120px 0 80px;
+            text-align: center;
+        }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 14px; border-radius: 20px;
+            background: rgba(10,132,255,0.15); color: var(--blue);
+            font-size: 0.8rem; font-weight: 600;
+            margin-bottom: 24px;
+            border: 1px solid rgba(10,132,255,0.25);
+        }
+        .hero h1 {
+            font-size: clamp(2.25rem, 6vw, 3.75rem);
+            font-weight: 800; line-height: 1.1;
+            letter-spacing: -0.02em;
+            margin-bottom: 20px;
+        }
+        .hero h1 em {
+            font-style: normal;
+            background: linear-gradient(135deg, var(--blue), var(--purple));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero-sub {
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+            color: var(--text-dim);
+            max-width: 560px; margin: 0 auto 36px;
+            line-height: 1.5;
+        }
+        .hero-cta-row {
+            display: flex; gap: 12px;
+            justify-content: center; flex-wrap: wrap;
+            margin-bottom: 56px;
+        }
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 14px 28px; border-radius: 14px;
+            font-weight: 600; font-size: 1rem;
+            text-decoration: none; transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--blue), var(--purple));
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(10,132,255,0.35);
+        }
+        .btn-primary:hover { box-shadow: 0 8px 30px rgba(10,132,255,0.45); }
+        .btn-ghost {
+            background: var(--bg-raised); color: var(--text);
+            border: 1px solid var(--border);
+        }
+        .btn-ghost:hover { border-color: var(--text-dim); }
+
+        /* Phone mockup grid */
+        .hero-phones {
+            display: flex; justify-content: center; gap: 20px;
+            max-width: 720px; margin: 0 auto;
+        }
+        .phone {
+            flex: 0 0 auto;
+            width: 200px;
+            border-radius: 28px;
+            overflow: hidden;
+            border: 3px solid var(--border);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            transition: transform 0.3s;
+        }
+        .phone:hover { transform: translateY(-8px); }
+        .phone img {
+            width: 100%; height: auto; display: block;
+        }
+        .phone-center {
+            width: 230px;
+            transform: translateY(-16px);
+            border-color: var(--blue);
+            box-shadow: 0 20px 60px rgba(10,132,255,0.25);
+        }
+
+        /* Trust strip */
+        .trust {
+            display: flex; justify-content: center; gap: 32px;
+            flex-wrap: wrap; padding: 40px 0;
+            border-top: 1px solid var(--border);
+            margin-top: 56px;
+        }
+        .trust-item {
+            display: flex; align-items: center; gap: 8px;
+            color: var(--text-dim); font-size: 0.875rem;
+        }
+        .trust-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--green);
+        }
+
+        /* ---- SECTION COMMON ---- */
+        section { padding: 80px 0; }
+        .section-label {
+            font-size: 0.8rem; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.08em;
+            color: var(--blue); margin-bottom: 12px;
+        }
+        .section-title {
+            font-size: clamp(1.5rem, 4vw, 2.25rem);
+            font-weight: 700; line-height: 1.2;
+            margin-bottom: 16px;
+        }
+        .section-desc {
+            color: var(--text-dim);
+            max-width: 540px; font-size: 1.05rem;
+        }
+        .section-header { margin-bottom: 48px; }
+        .centered { text-align: center; }
+        .centered .section-desc { margin: 0 auto; }
+
+        /* ---- FEATURES ---- */
+        .features-section { background: var(--bg); }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        .feature {
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            transition: border-color 0.2s;
+        }
+        .feature:hover { border-color: var(--text-dim); }
+        .feature-icon {
+            width: 44px; height: 44px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; margin-bottom: 16px;
+        }
+        .fi-blue { background: rgba(10,132,255,0.15); }
+        .fi-purple { background: rgba(139,92,246,0.15); }
+        .fi-green { background: rgba(48,209,88,0.15); }
+        .fi-orange { background: rgba(255,159,10,0.15); }
+        .feature h3 { font-size: 1.1rem; margin-bottom: 8px; }
+        .feature p { color: var(--text-dim); font-size: 0.925rem; }
+
+        /* ---- HOW IT WORKS ---- */
+        .how-section {
+            background: var(--bg-raised);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+        .step { text-align: center; }
+        .step-num {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--blue), var(--purple));
+            color: #fff; font-weight: 700; font-size: 1.1rem;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px;
+        }
+        .step h3 { font-size: 1.1rem; margin-bottom: 8px; }
+        .step p { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 20px; }
+        .step-phone {
+            width: 180px; margin: 0 auto;
+            border-radius: 24px; overflow: hidden;
+            border: 2px solid var(--border);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+        }
+        .step-phone img { width: 100%; display: block; }
+
+        /* ---- STYLEDNA ---- */
+        .dna-section { background: var(--bg); }
+        .dna-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+        .dna-text .section-label { color: var(--purple); }
+        .dna-points { margin-top: 28px; }
+        .dna-point {
+            display: flex; gap: 14px; margin-bottom: 20px;
+        }
+        .dna-point-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            background: rgba(139,92,246,0.12);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; flex-shrink: 0;
+        }
+        .dna-point h4 { font-size: 0.95rem; margin-bottom: 2px; }
+        .dna-point p { color: var(--text-dim); font-size: 0.875rem; }
+        .dna-visual {
+            display: flex; justify-content: center; gap: 16px;
+        }
+        .dna-phone {
+            width: 200px; border-radius: 26px; overflow: hidden;
+            border: 2px solid var(--border);
+            box-shadow: 0 16px 50px rgba(139,92,246,0.2);
+        }
+        .dna-phone img { width: 100%; display: block; }
+
+        /* ---- PRIVACY ---- */
+        .privacy-section {
+            background: var(--bg-raised);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+        .privacy-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        .privacy-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            text-align: center;
+        }
+        .privacy-icon-wrap {
+            width: 48px; height: 48px; border-radius: 50%;
+            background: rgba(48,209,88,0.12);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 16px; font-size: 1.25rem;
+        }
+        .privacy-card h3 { font-size: 1rem; margin-bottom: 6px; }
+        .privacy-card p { color: var(--text-dim); font-size: 0.875rem; }
+
+        /* ---- FINAL CTA ---- */
+        .cta-section {
+            padding: 100px 0;
+            text-align: center;
+            background: linear-gradient(180deg, var(--bg) 0%, #0a0a1a 100%);
+            position: relative;
+        }
+        .cta-section::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse at 50% 0%, rgba(10,132,255,0.12) 0%, transparent 60%);
+        }
+        .cta-section .wrap { position: relative; z-index: 1; }
+        .cta-section h2 {
+            font-size: clamp(1.75rem, 5vw, 2.75rem);
+            font-weight: 800; margin-bottom: 16px;
+        }
+        .cta-section p {
+            color: var(--text-dim); font-size: 1.1rem;
+            max-width: 480px; margin: 0 auto 32px;
+        }
+
+        /* ---- FOOTER ---- */
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid var(--border);
+        }
+        .footer-inner {
+            display: flex; justify-content: space-between;
+            align-items: center; flex-wrap: wrap; gap: 16px;
+        }
+        .footer-copy { color: var(--text-dim); font-size: 0.8rem; }
+        .footer-links { display: flex; gap: 20px; }
+        .footer-links a {
+            color: var(--text-dim); text-decoration: none;
+            font-size: 0.8rem; transition: color 0.2s;
+        }
+        .footer-links a:hover { color: var(--text); }
+
+        /* ---- RESPONSIVE ---- */
+        @media (max-width: 768px) {
+            .hero { padding: 100px 0 60px; }
+            .hero-phones { gap: 12px; }
+            .phone { width: 140px; border-radius: 22px; }
+            .phone-center { width: 160px; }
+            .features-grid { grid-template-columns: 1fr; }
+            .steps { grid-template-columns: 1fr; gap: 48px; }
+            .dna-layout { grid-template-columns: 1fr; gap: 40px; }
+            .dna-visual { order: -1; }
+            .privacy-grid { grid-template-columns: 1fr; }
+            .footer-inner { flex-direction: column; text-align: center; }
+        }
+
+        @media (max-width: 480px) {
+            .hero-phones { gap: 8px; }
+            .phone { width: 110px; border-radius: 18px; border-width: 2px; }
+            .phone-center { width: 130px; }
+            .trust { gap: 20px; }
+            .btn { padding: 12px 22px; font-size: 0.925rem; }
+        }
+
+        /* ---- ANIMATION ---- */
+        .reveal {
+            opacity: 0; transform: translateY(24px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .reveal.visible {
+            opacity: 1; transform: none;
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <div class="nav-inner">
+        <a href="#" class="nav-brand"><span>StyleLens</span></a>
+        <a href="https://testflight.apple.com/join/bDXd8a3C" class="nav-cta">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            TestFlight Beta
+        </a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="wrap">
+        <div class="hero-badge">Beta Now Available on TestFlight</div>
+        <h1>AI Photo Sorting That<br><em>Learns Your Taste</em></h1>
+        <p class="hero-sub">Stop scrolling through thousands of photos. StyleLens learns what YOU consider beautiful &mdash; not just what's technically good.</p>
+        <div class="hero-cta-row">
+            <a href="https://testflight.apple.com/join/bDXd8a3C" class="btn btn-primary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                Join TestFlight Beta
+            </a>
+            <a href="#how" class="btn btn-ghost">How It Works</a>
+        </div>
+
+        <!-- Phone screenshots -->
+        <div class="hero-phones">
+            <div class="phone">
+                <img src="screenshots/review-grid-with-scores.png" alt="StyleLens photo grid with quality scores" loading="lazy">
+            </div>
+            <div class="phone phone-center">
+                <img src="screenshots/main-sorting-screen.png" alt="StyleLens main sorting screen" loading="eager">
+            </div>
+            <div class="phone">
+                <img src="screenshots/styledna-profile-overview.png" alt="StyleDNA profile showing your photography style" loading="lazy">
+            </div>
+        </div>
+
+        <div class="trust">
+            <div class="trust-item"><div class="trust-dot"></div> 100% On-Device AI</div>
+            <div class="trust-item"><div class="trust-dot"></div> Photos Never Leave Your Device</div>
+            <div class="trust-item"><div class="trust-dot"></div> No Account Required</div>
+        </div>
+    </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features-section" id="features">
+    <div class="wrap">
+        <div class="section-header centered reveal">
+            <p class="section-label">Why StyleLens</p>
+            <h2 class="section-title">Most photo apps score "quality" the same<br>for everyone. StyleLens learns what's special to <em>you</em>.</h2>
+        </div>
+        <div class="features-grid">
+            <div class="feature reveal">
+                <div class="feature-icon fi-blue">&#x1F9E0;</div>
+                <h3>Learns Your Taste</h3>
+                <p>After 25 selections, StyleLens builds your personal StyleDNA &mdash; a visual fingerprint of your unique photography preferences.</p>
+            </div>
+            <div class="feature reveal">
+                <div class="feature-icon fi-purple">&#x26A1;</div>
+                <h3>Lightning Fast</h3>
+                <p>Sort hundreds of photos in minutes with Tinder-style swipes. Left to reject, right to keep. 10+ photos analyzed per second.</p>
+            </div>
+            <div class="feature reveal">
+                <div class="feature-icon fi-green">&#x1F512;</div>
+                <h3>Private by Design</h3>
+                <p>All AI runs locally on your iPhone using Apple's Neural Engine. No cloud. No uploads. No account. Zero tracking.</p>
+            </div>
+            <div class="feature reveal">
+                <div class="feature-icon fi-orange">&#x1F4CA;</div>
+                <h3>Smart Quality Scoring</h3>
+                <p>Technical analysis (sharpness, exposure, noise) plus aesthetic scoring (composition, color harmony) with a slider to balance both.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+    <div class="wrap">
+        <div class="section-header centered reveal">
+            <p class="section-label">How It Works</p>
+            <h2 class="section-title">From chaos to curated in three steps</h2>
+        </div>
+        <div class="steps">
+            <div class="step reveal">
+                <div class="step-num">1</div>
+                <h3>Filter &amp; Select</h3>
+                <p>Pick a date range, album, or location. Filters stack together so you find exactly the photos you need.</p>
+                <div class="step-phone">
+                    <img src="screenshots/filters-date-location-album.png" alt="Filter by date, location, and album" loading="lazy">
+                </div>
+            </div>
+            <div class="step reveal">
+                <div class="step-num">2</div>
+                <h3>Swipe to Sort</h3>
+                <p>AI pre-sorts your photos into Picked, Unsorted, and Unpicked. Swipe through to refine. Every choice teaches the AI.</p>
+                <div class="step-phone">
+                    <img src="screenshots/single-photo-swipe-review.png" alt="Swipe right to pick, left to reject" loading="lazy">
+                </div>
+            </div>
+            <div class="step reveal">
+                <div class="step-num">3</div>
+                <h3>Review &amp; Save</h3>
+                <p>Browse your curated grid. Export picks to a new album, delete rejects, or share. Free up storage, keep the memories.</p>
+                <div class="step-phone">
+                    <img src="screenshots/review-grid-with-scores.png" alt="Review your sorted photos in a grid" loading="lazy">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- STYLEDNA -->
+<section class="dna-section" id="styledna">
+    <div class="wrap">
+        <div class="dna-layout">
+            <div class="dna-text reveal">
+                <p class="section-label">Your Visual Fingerprint</p>
+                <h2 class="section-title">Discover Your StyleDNA</h2>
+                <p class="section-desc">Every photographer sees the world differently. StyleLens maps your unique aesthetic &mdash; then lets you share it.</p>
+                <div class="dna-points">
+                    <div class="dna-point">
+                        <div class="dna-point-icon">&#x1F3AF;</div>
+                        <div>
+                            <h4>See Your Preferences</h4>
+                            <p>Radar chart shows how you weight sharpness vs mood, vibrant colors vs subtle tones, portraits vs landscapes.</p>
+                        </div>
+                    </div>
+                    <div class="dna-point">
+                        <div class="dna-point-icon">&#x1F4F1;</div>
+                        <div>
+                            <h4>Share via QR Code</h4>
+                            <p>Generate a scannable code. Friends scan it and sort their photos using your taste preferences.</p>
+                        </div>
+                    </div>
+                    <div class="dna-point">
+                        <div class="dna-point-icon">&#x1F465;</div>
+                        <div>
+                            <h4>Try Someone Else's Style</h4>
+                            <p>Import a friend's StyleDNA and see your photos through their eyes. Compare, learn, have fun.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="dna-visual reveal">
+                <div class="dna-phone">
+                    <img src="screenshots/styledna-profile-overview.png" alt="StyleDNA profile with radar chart" loading="lazy">
+                </div>
+                <div class="dna-phone" style="margin-top: 40px;">
+                    <img src="screenshots/styledna-qr-code-share.png" alt="Share your StyleDNA via QR code" loading="lazy">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- PRIVACY -->
+<section class="privacy-section" id="privacy">
+    <div class="wrap">
+        <div class="section-header centered reveal">
+            <p class="section-label">Privacy First</p>
+            <h2 class="section-title">Your photos never leave your device</h2>
+            <p class="section-desc">Every AI model runs locally on your iPhone. No cloud processing, no data collection, no compromises.</p>
+        </div>
+        <div class="privacy-grid">
+            <div class="privacy-card reveal">
+                <div class="privacy-icon-wrap">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#30D158" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <h3>On-Device Processing</h3>
+                <p>All AI models run on Apple's Neural Engine. Your photos are analyzed locally and never transmitted anywhere.</p>
+            </div>
+            <div class="privacy-card reveal">
+                <div class="privacy-icon-wrap">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#30D158" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-5"/></svg>
+                </div>
+                <h3>No Account Needed</h3>
+                <p>Start using StyleLens immediately. No sign-up, no email, no social login. Just open and sort.</p>
+            </div>
+            <div class="privacy-card reveal">
+                <div class="privacy-icon-wrap">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#30D158" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                </div>
+                <h3>StyleDNA = Preferences Only</h3>
+                <p>When you share StyleDNA, you share taste parameters &mdash; never photos or identifiable data.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="cta-section" id="download">
+    <div class="wrap reveal">
+        <h2>The more you pick,<br>the smarter it gets.</h2>
+        <p>Join the beta and help shape the future of AI photo curation. Free on TestFlight.</p>
+        <a href="https://testflight.apple.com/join/bDXd8a3C" class="btn btn-primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            Join TestFlight Beta
+        </a>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="wrap">
+        <div class="footer-inner">
+            <span class="footer-copy">&copy; 2026 StyleLens</span>
+            <div class="footer-links">
+                <a href="privacy.md">Privacy Policy</a>
+                <a href="terms.md">Terms of Service</a>
+                <a href="mailto:stylelensapp@gmail.com">Contact</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+// Scroll-reveal animation
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.15 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
