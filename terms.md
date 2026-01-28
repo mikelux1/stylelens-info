@@ -1,3 +1,6 @@
+---
+title: Terms of Service - StyleLens
+---
 # Terms of Service
 
 **StyleLens**

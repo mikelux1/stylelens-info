@@ -1,3 +1,6 @@
+---
+title: Privacy Policy - StyleLens
+---
 # Privacy Policy
 
 **StyleLens**
